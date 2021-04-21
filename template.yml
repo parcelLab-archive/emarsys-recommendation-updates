@@ -1,33 +1,37 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Processes opt-in messages subscriber updates from 'opt-in-subscriber-updates' SQS and updates 'OptInSubscribers' DynamoDB Table
+Description: Processes emarsys-recommendation-updates from 'emarsys-recommendation-updates' SQS and updates 'EmarsysRecommendaions' DynamoDB Table
 
 Resources:
-  OptInSubscriberUpdates:
+  EmarsysRecommendationUpdates:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: opt-in-subscriber-updates
+      QueueName: emarsys-recommendation-updates
       MessageRetentionPeriod: 86400 # 24 hours
       ReceiveMessageWaitTimeSeconds: 20
       RedrivePolicy:
-        deadLetterTargetArn: !GetAtt OptInSubscriberUpdatesFailed.Arn
+        deadLetterTargetArn: !GetAtt EmarsysRecommendationUpdatesFailed.Arn
         maxReceiveCount: 5
 
-  OptInSubscriberUpdatesFailed:
+  EmarsysRecommendationUpdatesFailed:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: opt-in-subscriber-updates-failed
+      QueueName: emarsys-recommendation-updates-failed
       MessageRetentionPeriod: 604800 # 7 days in seconds
 
-  OptInSubscribers:
+  EmarsysRecommendations:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: OptInSubscribers
+      TableName: EmarsysRecommendations
       AttributeDefinitions:
         - AttributeName: email_hash
           AttributeType: 'S'
         - AttributeName: user_id
           AttributeType: 'N'
+        - AttributeName: predictUserID
+          AttributeType: 'S'
+        - AttributeName: predictSecret
+          AttributeType: 'S'
       KeySchema:
         - AttributeName: email_hash
           KeyType: HASH
@@ -40,22 +44,22 @@ Resources:
         ReadCapacityUnits: 10
         WriteCapacityUnits: 10
 
-  OptInSubscribersWriteCapacityScalableTarget: 
+  EmarsysRecommendationsWriteCapacityScalableTarget: 
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties: 
       MaxCapacity: 1000
       MinCapacity: 5
-      ResourceId: !Sub table/${OptInSubscribers}
+      ResourceId: !Sub table/${EmarsysRecommendations}
       RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
       ScalableDimension: "dynamodb:table:WriteCapacityUnits"
       ServiceNamespace: dynamodb
 
-  OptInSubscribersWriteScalingPolicy: 
+  EmarsysRecommendationsWriteScalingPolicy: 
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties: 
-      PolicyName: OptInSubscribersWriteAutoScalingPolicy
+      PolicyName: EmarsysRecommendationsWriteAutoScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref OptInSubscribersWriteCapacityScalableTarget
+      ScalingTargetId: !Ref EmarsysRecommendationsWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration: 
         TargetValue: 70
         ScaleInCooldown: 0
@@ -64,12 +68,12 @@ Resources:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
 
 
-  OptInSubscribersReadCapacityScalableTarget: 
+  EmarsysRecommendationsReadCapacityScalableTarget: 
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties: 
       MaxCapacity: 20
       MinCapacity: 5
-      ResourceId: !Sub table/${OptInSubscribers}
+      ResourceId: !Sub table/${EmarsysRecommendations}
       RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
       ScalableDimension: "dynamodb:table:ReadCapacityUnits"
       ServiceNamespace: dynamodb
@@ -77,9 +81,9 @@ Resources:
   UserTableReadScalingPolicy: 
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties: 
-      PolicyName: OptInSubscribersReadAutoScalingPolicy
+      PolicyName: EmarsysRecommendationsReadAutoScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref OptInSubscribersReadCapacityScalableTarget
+      ScalingTargetId: !Ref EmarsysRecommendationsReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration: 
         TargetValue: 70
         ScaleInCooldown: 0
@@ -88,21 +92,21 @@ Resources:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
 
   
-  OptInSubscriberUpdatesProcessor:
+  EmarsysRecommendationUpdatesProcessor:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: opt-in-subscriber-updates-processor
-      Description: Processes opt-in messages subscriber updates from 'opt-in-subscriber-updates' SQS and updates 'OptInSubscribers' DynamoDB Table
+      Description: Processes opt-in messages subscriber updates from 'opt-in-subscriber-updates' SQS and updates 'EmarsysRecommendaions' DynamoDB Table
       Runtime: nodejs12.x
       Handler: src/opt-in-subscriber-updates-processor.handler
       Environment:
         Variables:
-          DYANMO_DB_TABLE_NAME: !Ref OptInSubscribers
+          DYANMO_DB_TABLE_NAME: !Ref EmarsysRecommendaions
       Events:
         SQSQueueEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt OptInSubscriberUpdates.Arn
+            Queue: !GetAtt EmarsysRecommendationUpdates.Arn
             BatchSize: 10
             Enabled: true
       MemorySize: 128
@@ -111,4 +115,4 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBWritePolicy:
-            TableName: !Ref OptInSubscribers
+            TableName: !Ref EmarsysRecommendaions
