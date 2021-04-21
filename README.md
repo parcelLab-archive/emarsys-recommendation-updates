@@ -1,11 +1,11 @@
-# opt-in-subscriber-updates-processor
+<!-- # opt-in-subscriber-updates-processor
 
 [![opt-in-subscriber-updates-processor Pipeline Status](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/status?label=📃%20opt-in-subscriber-updates-processor)](https://eu-central-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/opt-in-subscriber-updates-processor-pipeline/view?region=eu-central-1)
-[![Deployed opt-in-subscriber-updates-processor Commit](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/id?label=📃%20opt-in-subscriber-updates-processor)](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/url)
+[![Deployed opt-in-subscriber-updates-processor Commit](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/id?label=📃%20opt-in-subscriber-updates-processor)](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/url) -->
 
 ## What does it do?
 
-Processes opt-in messages subscriber updates from `opt-in-subscriber-updates` SQS and updates `OptInSubscribers` DynamoDB Table
+Processes opt-in messages subscriber updates from `emarsys-recommendation-updates` SQS and updates `EmarsysReommendaions` DynamoDB Table
 
 Expects SQS messages with the following SQS `body` attribute:
 
@@ -13,20 +13,21 @@ Expects SQS messages with the following SQS `body` attribute:
 {
   "user_id": Number,
   "payload": {
-    "event_type": String, // one of ['add', 'add-and-forget', 'delete'],
+    "event_type": String, // one of ['add', 'delete'],
     "email_hash": String, // SHA256 hash of email address of customer
-    "opt_out_url": String // required for 'add*' events only ! - the opt out URL that will be presented to the customers in our communication
+    // required for 'add*' events only ! - the product recommendation will be presented to the customers in our communication
+    "predictSecret": String, 
+    "predictUserID": String
   }
 }
 ```
 
-Updates `OptInSubscribers` DynamoDB table that uses `event_type` and `user_id` as the primary key.
-Moves unprocessable SQS messages to `opt-in-subscriber-updates-failed` deadletter SQS queue after 3 unssucessful receives.
+Updates `EmarsysRecommendations` DynamoDB table that uses `event_type` and `user_id` as the primary key.
+Moves unprocessable SQS messages to `emarsys-recommendation-updates-failed` deadletter SQS queue after 3 unssucessful receives.
 
 ### Event Types
 
 * `add` - adds or overwrites subscriber entry without letting the entry expire automatically
-* `add-and-forget` - adds or overwrites subscriber entry and tell DynamoDB to let the entry expire after 24 hours
 * `delete` - delete subscriber
 
 ## How do I run it locally ?
@@ -51,7 +52,7 @@ All automated tests are placed in `./__tests__` and are executed with Jest.
 npm test
 ```
 
-## How do I deploy it?
+<!-- ## How do I deploy it?
 
 Push your changes to `master` and they will be automatically deployed 
-via the [opt-in-subscriber-updates-processor-pipeline](https://eu-central-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/opt-in-subscriber-updates-processor-pipeline/view?region=eu-central-1)
+via the [opt-in-subscriber-updates-processor-pipeline](https://eu-central-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/opt-in-subscriber-updates-processor-pipeline/view?region=eu-central-1) -->
