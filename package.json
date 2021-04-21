@@ -1,0 +1,22 @@
+{
+    "name": "emarsys-recommendation-updates-processor",
+    "description": "Processes opt-in messages subscriber updates from 'opt-in-subscriber-updates' SQS and updates 'OptInSubscribers' DynamoDB Table",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {},
+    "devDependencies": {
+        "aws-sdk": "^2.716.0",
+        "jest": "^24.7.1",
+        "standard": "^14.3.4"
+    },
+    "scripts": {
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "build": "sam build"
+    },
+    "standard": {
+        "env": [
+            "jest"
+        ]
+    }
+}
