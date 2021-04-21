@@ -32,8 +32,8 @@ describe('emarsys-recommendation-updates-processor.handler', () => {
               Item: {
                 email_hash: 'bdee58fd24f4592bf3395476a4426259c453ba429494d79332e5c8284b1e5401',
                 user_id: 1,
-                predictUserID: '1140fdbb9daead74',
-                predictSecret: '456caba52cdb2'
+                predict_user_id: '1140fdbb9daead74',
+                predict_secret: '456caba52cdb2'
               }
             }
           }]
@@ -103,8 +103,8 @@ describe('emarsys-recommendation-updates-processor.handler', () => {
                 Item: {
                   email_hash: 'bdee58fd24f4592bf3395476a4426259c453ba429494d79332e5c8284b1e5401',
                   user_id: 1,
-                  predictUserID: '1140fdbb9daead74',
-                  predictSecret: '456caba52cdb2'
+                  predict_user_id: '1140fdbb9daead74',
+                  predict_secret: '456caba52cdb2'
                 }
               }
             }, {

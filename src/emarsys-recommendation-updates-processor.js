@@ -21,8 +21,8 @@ const convertToDynamoDbRequestItems = EmarsysRecommendationUpdateEvents => {
   return EmarsysRecommendationUpdateEvents.map(({
     user_id,
     email_hash,
-    predictUserID,
-    predictSecret,
+    predict_user_id,
+    predict_secret,
     event_type
   }) => {
     switch (event_type) {
@@ -32,8 +32,8 @@ const convertToDynamoDbRequestItems = EmarsysRecommendationUpdateEvents => {
             Item: {
               user_id,
               email_hash,
-              predictUserID,
-              predictSecret
+              predict_user_id,
+              predict_secret
             }
           }
         }
@@ -71,8 +71,8 @@ exports.handler = async ({ Records: records = [] } = {}) => {
       payload: {
         event_type,
         email_hash,
-        predictUserID,
-        predictSecret
+        predict_user_id,
+        predict_secret
       } = {}
     } = parseFromJSON(body)
 
@@ -80,8 +80,8 @@ exports.handler = async ({ Records: records = [] } = {}) => {
       user_id,
       event_type,
       email_hash,
-      predictUserID,
-      predictSecret
+      predict_user_id,
+      predict_secret
     }
   })
 
