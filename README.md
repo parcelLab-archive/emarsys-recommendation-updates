@@ -4,8 +4,6 @@
 [![Deployed opt-in-subscriber-updates-processor Commit](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/id?label=📃%20opt-in-subscriber-updates-processor)](https://badge.parcellab.com/pipeline/opt-in-subscriber-updates-processor-pipeline/commit/url) -->
 
 ## What does it do?
-- Emarsys is a shop of Woodbrass. They want to recommend products to their users.
-- 
 Processes amarsys recomnendation updates from `emarsys-recommendation-updates` SQS and updates `EmarsysReommendaions` DynamoDB Table
 
 Expects SQS messages with the following SQS `body` attribute:
